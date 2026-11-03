@@ -11,7 +11,7 @@ HTML=re.sub(r'<meta http-equiv="Content-Security-Policy"[^>]*>','',HTML)
 HTML=re.sub(r'<script[^>]*>.*?</script>','',HTML,flags=re.S)
 HTML=re.sub(r'<link[^>]*rel="stylesheet"[^>]*>','',HTML)
 HTML=HTML.replace('./assets/logo.png','data:image/png;base64,'+base64.b64encode((ASSETS/'logo.png').read_bytes()).decode())
-SOURCE={n:(ASSETS/f'{n}.js').read_text() for n in ['ultra4k','smart-backup','ondevice-ai','media','studio-api','intro','app']}
+SOURCE={n:(ASSETS/f'{n}.js').read_text() for n in ['ultra4k','smart-backup','ondevice-ai','media','studio-api','intro','motion','app']}
 SOURCE['model']=(ASSETS/'tiny-restore-v1.json').read_text()
 SOURCE['app']=SOURCE['app'].replace("localStorage.getItem('blink_api_origin')","''").replace("localStorage.setItem('blink_api_origin',base);",'').replace('window.history.replaceState(', '(()=>{} )(').replace('if(!window.isSecureContext)throw new Error','if(false)throw new Error')
 with sync_playwright() as p:
@@ -40,7 +40,7 @@ with sync_playwright() as p:
       sources['ondevice-ai']=sources['ondevice-ai'].replace("'./smart-backup.js'",`'${mods['smart-backup']}'`).replace("new URL('./tiny-restore-v1.json',import.meta.url)",JSON.stringify(model));
       mods['ondevice-ai']=blobURL(sources['ondevice-ai']);
       sources.media=sources.media.replaceAll("'./smart-backup.js'",`'${mods['smart-backup']}'`).replaceAll("'./ultra4k.js'",`'${mods.ultra4k}'`).replaceAll("'./ondevice-ai.js'",`'${mods['ondevice-ai']}'`);
-      for(const n of ['media','studio-api','intro'])mods[n]=blobURL(sources[n]);
+      for(const n of ['media','studio-api','intro','motion'])mods[n]=blobURL(sources[n]);
       let app=sources.app;for(const n in mods)app=app.replace(`'./${n}.js'`,`'${mods[n]}'`);
       const media=await import(mods.media);await import(blobURL(app));
       window.__blinkMedia=media;
