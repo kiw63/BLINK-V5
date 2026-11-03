@@ -18,7 +18,7 @@ with sync_playwright() as p:
  errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
  page.goto('about:blank');page.set_content(html)
  page.add_style_tag(content=(root/'assets/style.css').read_text());page.add_style_tag(content=(root/'assets/intro.css').read_text())
- sources={name:(root/f'assets/{name}.js').read_text() for name in ('ultra4k','smart-backup','ondevice-ai','media','studio-api','intro','app')}
+ sources={name:(root/f'assets/{name}.js').read_text() for name in ('ultra4k','smart-backup','ondevice-ai','media','studio-api','intro','motion','app')}
  sources['model']=(root/'assets/tiny-restore-v1.json').read_text()
  sources['app']=(sources['app']
     .replace("localStorage.getItem('blink_api_origin')","''")
@@ -43,7 +43,7 @@ with sync_playwright() as p:
   sources['ondevice-ai']=sources['ondevice-ai'].replace("'./smart-backup.js'",`'${modules['smart-backup']}'`).replace("new URL('./tiny-restore-v1.json',import.meta.url)",JSON.stringify(model));
   modules['ondevice-ai']=blobUrl(sources['ondevice-ai']);
   sources.media=sources.media.replaceAll("'./ultra4k.js'",`'${modules.ultra4k}'`).replaceAll("'./smart-backup.js'",`'${modules['smart-backup']}'`).replaceAll("'./ondevice-ai.js'",`'${modules['ondevice-ai']}'`);
-  for(const n of ['media','studio-api','intro'])modules[n]=blobUrl(sources[n]);
+  for(const n of ['media','studio-api','intro','motion'])modules[n]=blobUrl(sources[n]);
   let app=sources.app;for(const n in modules)app=app.replace(`'./${n}.js'`,`'${modules[n]}'`);
   await import(blobUrl(app));
   return {track:stream.getVideoTracks()[0].readyState};
